@@ -5,7 +5,7 @@
 # 整体设计
 
 ### 架构图
-![](./docs/pics/deploy_region.jpg)
+![](https://withnate-1259201219.cos.ap-shanghai.myqcloud.com/pics/deploy_region.jpg)
 
 - 每个集群包含前端负载均衡(nginx)、urlserver集群、redis、mysql
 - 根据需要在多个可用区部署多个这样的集群，设置不同的短链接域名,如 `https://a.cn` 、 `https://b.cn`，提高系统的容量
@@ -26,13 +26,13 @@
 
 ### 长链接生成短链接时序
 
-![](./docs/pics/long.jpg)
+![](https://withnate-1259201219.cos.ap-shanghai.myqcloud.com/pics/long.jpg)
 
 ### 短链接读取长链接时序
-![](./docs/pics/short.jpg)
+![](https://withnate-1259201219.cos.ap-shanghai.myqcloud.com/pics/short.jpg)
 
 ### 单元测试 & 集成测试
-![](./docs/pics/cov.jpg)
+![](https://withnate-1259201219.cos.ap-shanghai.myqcloud.com/pics/cov.jpg)
 
 # 快速开发
 
