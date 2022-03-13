@@ -18,7 +18,7 @@ describe('test/controller/home.test.ts', () => {
     expect(result.body.code).toBe(10001);
 
     // test exist
-    const res2 = await createHttpRequest(app).get('/api/getByShortUrl').query({ url: 'e' });
+    const res2 = await createHttpRequest(app).get('/api/getByShortUrl').query({ url: 'https://withnate.cn/o9' });
     expect(res2.status).toBe(200);
     expect(res2.body.code).toBe(0);
 

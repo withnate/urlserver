@@ -1,7 +1,8 @@
-import { Provide, Inject } from '@midwayjs/decorator';
+import { Provide, Inject, Config } from '@midwayjs/decorator';
 
 import { LocalRedisService } from './redis.service';
 import { IdToShortURL, ShortUrlToId } from '../util/convert';
+import { sha256 } from '../util/hash';
 import { UrlModel } from '../entity/url';
 
 const ShortUrlDomainPrefix = 'https://withnate.cn/';
@@ -11,11 +12,29 @@ export class UrlService {
   @Inject()
   redisService: LocalRedisService;
 
+  @Config('salt')
+  salt;
+
   async getByShortUrl(url: string) {
-    if (!url) {
+    if (!url.startsWith(ShortUrlDomainPrefix)) {
       return {
         code: 10001,
         msg: 'params error',
+      };
+    }
+    url = url.slice(ShortUrlDomainPrefix.length);
+    if (!url || url.length < 2) {
+      return {
+        code: 10001,
+        msg: 'params error',
+      };
+    }
+    // 校验salt
+    const saltChar = sha256(url.slice(0, url.length - 1), this.salt.sha);
+    if (saltChar !== url.slice(url.length - 1)) {
+      return {
+        code: 10002,
+        msg: 'url not valid',
       };
     }
 
@@ -111,7 +130,16 @@ export class UrlService {
         data: {},
       };
     }
-    const shortUrl = IdToShortURL(createRes.id);
+    let shortUrl = IdToShortURL(createRes.id);
+    if (shortUrl.length > 7) {
+      return {
+        code: -1,
+        msg: 'max system limit',
+        data: {},
+      };
+    }
+    const saltChar = sha256(shortUrl, this.salt.sha);
+    shortUrl += saltChar;
     console.log(`shortUrl : ${shortUrl}`);
     // 先添加redis bf
     await this.redisService.bfAdd(shortUrl);
@@ -122,6 +150,7 @@ export class UrlService {
 
     const finalShortUrl = ShortUrlDomainPrefix + shortUrl;
     await this.redisService.set(url, finalShortUrl);
+    await this.redisService.set(shortUrl, url);
 
     return {
       code: 0,

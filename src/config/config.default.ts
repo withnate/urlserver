@@ -26,4 +26,5 @@ export default {
       // db: 0,
     },
   },
+  salt: { sha: 'urlserver_v1' },
 } as MidwayConfig;
